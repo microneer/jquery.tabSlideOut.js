@@ -4,6 +4,8 @@
     By William Paoli: http://wpaoli.building58.com
     Contributions by:
         Michael Fielding / www.hawkip.com
+    License: GPL v2.0
+    Original location: http://code.google.com/p/tab-slide-out
 
     To use you must have a div, img, span etc. for the tab, inside a div which
     will be the panel.
@@ -20,6 +22,7 @@
     bottom edge and the panel bottom - the panel is resized with the window. This only
     really makes sense if fixedPosition: true, and only works if tabLocation is
     left or right.
+
 */
 
 
@@ -33,16 +36,16 @@
             tabLocation: 'left', // left, right, top or bottom
             topPos: '200px',
             leftPos: '20px',
-            fixedPosition: false,
+            fixedPosition: false, // positioning: fixed? (otherwise absolute)
             /* optional setting bottomPos: '10px', for left or right tabLocations */
             positioning: 'absolute',
             pathToTabImage: null,
             imageHeight: null,
             imageWidth: null,
             handleOffset: '0',
-            onLoadSlideOut: false,
-            onOpen: function(){},
-            onClose: function(){}
+            onLoadSlideOut: false, // slide out after DOM load
+            onOpen: function(){}, // handler called after opening
+            onClose: function(){} // handler called after closing
         }, callerSettings||{});
 
         settings.tabHandle = $(settings.tabHandle);
