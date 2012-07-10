@@ -48,6 +48,17 @@ left or right.
             onOpen: function(){}, // handler called after opening
             onClose: function(){} // handler called after closing
 
+Methods
+-------
+
+You can use some methods too:
+
+        $('#slide-out-div').tabSlideOut('isOpen'); // returns true or false
+        $('#slide-out-div').tabSlideOut('open'); // opens it
+        $('#slide-out-div').tabSlideOut('close'); // closes it
+        $('#slide-out-div').tabSlideOut('toggle'); // toggles it
+
+
 Licence
 -------
 
