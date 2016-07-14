@@ -1,5 +1,5 @@
 /*
-    tabSlideOUt v2.0
+    tabSlideOUt v2.1
 
     By William Paoli: http://wpaoli.building58.com
     Contributions by:
@@ -29,12 +29,11 @@
         $('#slide-out-div').tabSlideOut('open'); // opens it
         $('#slide-out-div').tabSlideOut('close'); // closes it
         $('#slide-out-div').tabSlideOut('toggle'); // toggles it
+        $('#slide-out-div').tabSlideOut('bounce'); // bounces the tab
 
 */
-
-
 (function($){
-    $.fn.tabSlideOut = function(callerSettings) {
+    $.fn.tabSlideOut = function(callerSettings, oParams) {
 
         if ( typeof callerSettings == 'string' )
         {
@@ -55,6 +54,9 @@
                 case 'toggle':
                     this.children('.ui-slideouttab-handle').click();
                     break;
+                case 'bounce':
+                    this.children('.ui-slideouttab-handle').trigger('bounce');
+                    break;
                 default:
                     throw "Invalid tabSlideOut command";
             }
@@ -70,6 +72,8 @@
                 tabLocation: 'left', // left, right, top or bottom
                 topPos: '200px',
                 leftPos: '20px',
+                bounceDistance: '50px', // how far 'bounce event will move everything
+                bounceTimes: 4, // how many bounces when 'bounce' is called
                 fixedPosition: false, // positioning: fixed? (otherwise absolute)
                 /* optional setting bottomPos: '10px', for left or right tabLocations */
                 positioning: 'absolute',
@@ -78,6 +82,7 @@
                 imageWidth: null,
                 handleOffset: '0',
                 onLoadSlideOut: false, // slide out after DOM load
+                clickScreenToClose: true, // close when rest of screen clicked
                 onOpen: function(){}, // handler called after opening
                 onClose: function(){} // handler called after closing
             }, callerSettings||{});
@@ -109,7 +114,6 @@
 
             settings.tabHandle.css({
                 'display': 'block',
-                'textIndent' : '-99999px',
                 'outline' : 'none',
                 'position' : 'absolute'
             });
@@ -187,29 +191,50 @@
             });
 
             var slideIn = function() {
-
-                if (settings.tabLocation === 'top') {
-                    obj.animate({top:'-' + properties.containerHeight}, settings.speed, settings.onClose()).removeClass('open');
-                } else if (settings.tabLocation === 'left') {
-                    obj.animate({left: '-' + properties.containerWidth}, settings.speed, settings.onClose()).removeClass('open');
-                } else if (settings.tabLocation === 'right') {
-                    obj.animate({right: '-' + properties.containerWidth}, settings.speed, settings.onClose()).removeClass('open');
-                } else if (settings.tabLocation === 'bottom') {
-                    obj.animate({bottom: '-' + properties.containerHeight}, settings.speed, settings.onClose()).removeClass('open');
+                var iDimension;
+                switch ( settings.tabLocation )
+                {
+                    case 'top':
+                    case 'bottom':
+                        iDimension = properties.containerHeight;
+                        break;
+                    case 'left':
+                    case 'right':
+                        iDimension = properties.containerWidth;
                 }
-
+                
+                var param = [];
+                param[settings.tabLocation] = '-' + iDimension;
+                obj.animate(param, settings.speed, settings.onClose()).removeClass('open');
             };
 
             var slideOut = function() {
-
-                if (settings.tabLocation === 'top') {
-                    obj.animate({top:'-3px'},  settings.speed, settings.onOpen()).addClass('open');
-                } else if (settings.tabLocation === 'left') {
-                    obj.animate({left:'-3px'},  settings.speed, settings.onOpen()).addClass('open');
-                } else if (settings.tabLocation === 'right') {
-                    obj.animate({right:'-3px'},  settings.speed, settings.onOpen()).addClass('open');
-                } else if (settings.tabLocation === 'bottom') {
-                    obj.animate({bottom:'-3px'},  settings.speed, settings.onOpen()).addClass('open');
+                var param = [];
+                param[settings.tabLocation] = '-3px';
+                obj.animate(param,  settings.speed, settings.onOpen()).addClass('open');
+            };
+            
+            // animate the tab in and out
+            var moveIn = [];
+            moveIn[settings.tabLocation] = '-=' + settings.bounceDistance;
+            var moveOut = [];
+            moveOut[settings.tabLocation] = '+=' + settings.bounceDistance;
+            
+            var bounceIn = function() {
+                var temp = obj;
+                for ( var i = 0; i < settings.bounceTimes; i++ )
+                {
+                    temp = temp.animate(moveIn,  settings.speed)
+                       .animate(moveOut,  settings.speed);
+                }
+            };
+            
+            var bounceOut = function() {
+                var temp = obj;
+                for ( var i = 0; i < settings.bounceTimes; i++ )
+                {
+                    temp = temp.animate(moveOut,  settings.speed)
+                       .animate(moveIn,  settings.speed);
                 }
             };
 
@@ -243,7 +268,8 @@
                         slideOut();
                     }
                 });
-                clickScreenToClose();
+                if ( settings.clickScreenToClose )
+                    clickScreenToClose();
             };
 
             var hoverAction = function(){
@@ -274,7 +300,8 @@
                             }
                         });
 
-                    clickScreenToClose();
+                    if ( settings.clickScreenToClose )
+                        clickScreenToClose();
 
             };
 
@@ -295,6 +322,16 @@
             if (settings.onLoadSlideOut) {
                 slideOutOnLoad();
             }
+            
+            settings.tabHandle.on('bounce', function(event){
+                if (obj.hasClass('open')) {
+                    bounceIn();
+                } else {
+                    bounceOut();
+                }
+            });
+
         }
+        return this;
     };
 })(jQuery);
