@@ -1,50 +1,36 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>jQuery.tabSlideOut Demo</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link type="text/css" href="../jquery.tabSlideOut.css" rel="stylesheet" media="all" />
-        <link type="text/css" href="demo.css" rel="stylesheet" media="all" />
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>        
-        <script src="https://use.fontawesome.com/2be9406092.js"></script>
-        <script type="text/javascript" src="../jquery.tabSlideOut.js"></script>        
-        <script type="text/javascript" src="demo.js"></script>        
-    </head>
-    <body>
-        <h1>jQuery.tabSlideOut Demo</h1>
-        
-        <div id="panel-1">
-            <a class="handle ui-slideouttab-handle-rounded">Left<i class="fa fa-icon fa-television"></i></a>
-          <p>This panel doesn't close automatically when somewhere else is clicked.</p>
-          <p>And it can be controlled from the buttons in the main window.</p>
-        </div>
-        
-        <div id="panel-2">
-          <a class="handle ui-slideouttab-handle-rounded">Right<i class="fa fa-icon fa-bank"></i></a>
-          <p>Some content in this panel.</p>
-          <p>Line 1</p>
-          <p>Line 2</p>
-          <p>Line 3</p>
-        </div>
-        
-        <div id="panel-3">
-          <a class="handle ui-slideouttab-handle-rounded">Top (hover)</a>
-          <p>Some content in this panel, which stretches over many lines.</p>
-          <p>Line 1</p>
-          <p>Line 2</p>
-          <p>Line 3</p>
-        </div>
-        
-        <div id="panel-4">
-          <a class="handle ui-slideouttab-handle-rounded">Bottom<i class="fa fa-icon fa-user"></i></a>
-          <p>This panel closes automatically when somewhere else is clicked.</p>
-        </div>
-        
-        <p>Open, close, toggle and bounce programmatically:</p>
-        <button id="open">Click to open Left</button>
-        <button id="close" disabled="true">Click to close Left</button>
-        <button id="toggle">Click to toggle Left</button>
-        <button id="bounce">Click to bounce Left</button>
-    </body>
-</html>
+<body>
+  <h1>jQuery.tabSlideOut Demo</h1>
+
+  <div id="left">
+    <a class="handle ui-slideouttab-handle-rounded">Left<i class="fa fa-icon fa-television"></i></a>
+    <p>This panel doesn't close automatically when somewhere else is clicked.</p>
+    <p>And it can be controlled from the buttons in the main window.</p>
+  </div>
+
+  <div id="right">
+    <a class="handle ui-slideouttab-handle-rounded">Right<i class="fa fa-icon fa-bank"></i></a>
+    <p>Some content in this panel.</p>
+    <p>Line 1</p>
+    <p>Line 2</p>
+    <p>Line 3</p>
+  </div>
+
+  <div id="top>
+    <a class="handle ui-slideouttab-handle-rounded">Top (hover)</a>
+    <p>Some content in this panel, which stretches over many lines.</p>
+    <p>Line 1</p>
+    <p>Line 2</p>
+    <p>Line 3</p>
+  </div>
+
+  <div id="bottom">
+    <a class="handle ui-slideouttab-handle-rounded">Bottom<i class="fa fa-icon fa-user"></i></a>
+    <p>This panel closes automatically when somewhere else is clicked.</p>
+  </div>
+
+  <p>Open, close, toggle and bounce programmatically:</p>
+  <button id="open">Click to open Left</button>
+  <button id="close" disabled="true">Click to close Left</button>
+  <button id="toggle">Click to toggle Left</button>
+  <button id="bounce">Click to bounce Left</button>
+</body>
