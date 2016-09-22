@@ -1,0 +1,12 @@
+--- 
+ name: jQuery tabSlideOut Demo
+ description: Demonstration of jQuery tabSlideOut plugin
+ authors:
+   - Michael Fielding
+ resources:
+   - https://use.fontawesome.com/2be9406092.js
+   - https://rawgit.com/hawk-ip/jquery.tabSlideOut.js/master/jquery.tabSlideOut.css
+   - https://rawgit.com/hawk-ip/jquery.tabSlideOut.js/master/jquery.tabSlideOut.js
+ normalize_css: no
+ ...
+ 

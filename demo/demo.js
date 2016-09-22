@@ -1,8 +1,10 @@
 $(document).ready(function() {
     
-    var panel1 = $('#panel-1').tabSlideOut({
+    var left = $('#left').tabSlideOut({
       tabLocation: 'left',
       clickScreenToClose: false,
+      offset: '40px',
+      offsetReverse: true, // offset from bottom, not top
       // handlers: enable and disable buttons when sliding open or closed
       onOpen: function(){
           $('#open').prop('disabled',true);
@@ -14,22 +16,21 @@ $(document).ready(function() {
       }      
     });
     
-    $('#panel-2').tabSlideOut({
+    $('#right').tabSlideOut({
       tabLocation: 'right',
       offsetReverse: true,
       handleOffsetReverse: true
     });
     
-    $('#panel-3').tabSlideOut({
+    $('#top').tabSlideOut({
       tabLocation: 'top',
       action: 'hover',
       handleOffsetReverse: true,
       offsetReverse: true,
-      offset: '20px',
       onLoadSlideOut: true
     });
     
-    $('#panel-4').tabSlideOut({
+    $('#bottom').tabSlideOut({
       tabLocation: 'bottom',  
       offset: '40px',
       otherOffset: '40px'
@@ -37,7 +38,13 @@ $(document).ready(function() {
     
     /* programmatically drive the left tab */
     $('button').click(function(event){
-        panel1.tabSlideOut( /*command*/$(event.target).attr('id') );
+        left.tabSlideOut( /*command*/$(event.target).attr('id') );
+    });
+    
+    /* register event handler */
+    $(document).on('slideouttabopen slideouttabclose slideouttabbounce',function(event){
+        var text = $(event.target).attr('id')+': '+event.type;
+        $('#events').append(text+"\n");
     });
     
 });

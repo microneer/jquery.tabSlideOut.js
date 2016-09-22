@@ -12,7 +12,7 @@
 
     example:
 
-        $('.slide-out-div').tabSlideOut({
+        $('#slide-out-div').tabSlideOut({
                 tabHandle: '.handle', //selector for the tab
         });
 
@@ -25,17 +25,25 @@
 
     You can use some methods too:
 
-        $('#slide-out-div').tabSlideOut('isOpen'); // true or false
+        $('#slide-out-div').tabSlideOut('isOpen'); // return true or false
         $('#slide-out-div').tabSlideOut('open'); // opens it
         $('#slide-out-div').tabSlideOut('close'); // closes it
         $('#slide-out-div').tabSlideOut('toggle'); // toggles it
         $('#slide-out-div').tabSlideOut('bounce'); // bounces the tab
 
+    Three events are defined, respond to one or more of them as follows:
+
+        $(document).on('slideouttabopen slideouttabclose slideouttabbounce',function(event){
+            var $panel = $(event.target);
+            var eventType = event.type;
+            // your code here
+        });
+
     Add the class ui-slideouttab-handle-rounded to handles to give them 
     rounded outer corners.
 */
 (function($){
-    $.fn.tabSlideOut = function(callerSettings, oParams) {
+    $.fn.tabSlideOut = function(callerSettings) {
 
         /*
          * Get the width of the given border, in pixels.
@@ -109,7 +117,7 @@
                 otherOffset: null, // if set, panel size is set to maintain this dist from bottom or right (top or left if offsetReverse)
                 handleOffset: null, // e.g. '10px'. If null, detects panel border to align handle nicely
                 handleOffsetReverse: false, // if true, handle aligned with right or bottom of panel 
-                bounceDistance: '50px', // how far 'bounce event will move everything
+                bounceDistance: '50px', // how far bounce event will move everything
                 bounceTimes: 4, // how many bounces when 'bounce' is called
                 positioning: 'absolute', // can also use fixed
                 pathToTabImage: null, // optional image to show in the tab
@@ -252,14 +260,20 @@
                 
                 var param = [];
                 param[edge] = '-' + size;
-                panel.animate(param, settings.speed, settings.onClose()).removeClass('ui-slideouttab-open');
+                panel.animate(param, settings.speed, function(){
+                    panel.trigger('slideouttabclose');
+                    settings.onClose();
+                }).removeClass('ui-slideouttab-open');
             };
 
             var slideOut = function() {
                 var param = [];
                 // show everything except the border along the edge we're on
                 param[edge] = '-'+borderWidth(panel,edge)+'px';
-                panel.animate(param,  settings.speed, settings.onOpen()).addClass('ui-slideouttab-open');
+                panel.animate(param,  settings.speed, function(){
+                    panel.trigger('slideouttabopen');
+                    settings.onOpen();
+                }).addClass('ui-slideouttab-open');
             };
             
             // animate the tab in and out
@@ -275,6 +289,7 @@
                     temp = temp.animate(moveIn,  settings.speed)
                        .animate(moveOut,  settings.speed);
                 }
+                panel.trigger('slideouttabbounce');
             };
             
             var bounceOut = function() {
@@ -284,8 +299,10 @@
                     temp = temp.animate(moveOut,  settings.speed)
                        .animate(moveIn,  settings.speed);
                 }
+                panel.trigger('slideouttabbounce');
             };
 
+            // handle clicks in rest of document to close tabs if they're open
             var clickScreenToClose = function() {
                 panel.click(function(event){
                     event.stopPropagation();
@@ -297,7 +314,9 @@
 
 
                 $(document).click(function(){
-                    slideIn();
+                    if ( isOpen() ){
+                        slideIn();
+                    }
                 });
             };
 
