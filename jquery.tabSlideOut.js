@@ -1,5 +1,5 @@
 /*
-    tabSlideOUt v2.1
+    tabSlideOUt v2.2
 
     By William Paoli: http://wpaoli.building58.com
     Contributions by:
@@ -7,8 +7,8 @@
     License: GPL v2.0
     Original location: http://code.google.com/p/tab-slide-out
 
-    To use you must have a div, img, span etc. for the tab, inside a div which
-    will be the panel.
+    To use you must have a div, a, img, span etc. for the handle, inside a div which
+    will be the panel. By default the selector for handles is .handle
 
     example:
 
@@ -20,7 +20,7 @@
 
     There is an optional setting bottomPos which, when set, fixes the gap between the window
     bottom edge and the panel bottom - the panel is resized with the window. This only
-    really makes sense if fixedPosition: true, and only works if tabLocation is
+    really makes sense if positioning: 'fixed', and only works if tabLocation is
     left or right.
 
     You can use some methods too:
@@ -31,25 +31,60 @@
         $('#slide-out-div').tabSlideOut('toggle'); // toggles it
         $('#slide-out-div').tabSlideOut('bounce'); // bounces the tab
 
+    Add the class ui-slideouttab-handle-rounded to handles to give them 
+    rounded outer corners.
 */
 (function($){
     $.fn.tabSlideOut = function(callerSettings, oParams) {
 
+        /*
+         * Get the width of the given border, in pixels.
+         * 
+         * @param node element
+         * @param string edge
+         * @returns int
+         */
+        function borderWidth(element,edge){
+            return parseInt(element.css('border-'+edge+'-width'), 10);
+        }
+
+        /**
+         * True if the tab is open.
+         * 
+         * @returns boolean
+         */
+        function isOpen() {
+            return panel.hasClass('ui-slideouttab-open');
+        }
+        
+        /**
+         * Return the desired height of the panel to maintain both offsets.
+         */
+        function calculatePanelSize() {
+            var available = $(window).height();
+            if ( edge==='top' || edge==='bottom') {
+                available = $(window).width();
+            }
+            return available - parseInt(settings.otherOffset) - parseInt(settings.offset);
+        }
+
+        var panel = this;
+            
         if ( typeof callerSettings == 'string' )
         {
             // param is a string, use command mode
             switch ( callerSettings )
             {
                 case 'open':
-                    if ( !this.hasClass('open') )
+                    if ( !isOpen() )
                         this.children('.ui-slideouttab-handle').click();
                     break;
                 case 'close':
-                    if ( this.hasClass('open') )
+                    if ( isOpen() )
                         this.children('.ui-slideouttab-handle').click();
                     break;
                 case 'isOpen':
-                    return this.hasClass('open');
+                    return isOpen();
                     break;
                 case 'toggle':
                     this.children('.ui-slideouttab-handle').click();
@@ -65,125 +100,137 @@
         {
             // param is an object, it's initialisation mode
             var settings = $.extend({
-                tabHandle: '.handle', // JQuery selector for the tab, can use #
-                toggleButton: '.tab-opener',
-                speed: 300,
-                action: 'click',  // action which will open the panel
                 tabLocation: 'left', // left, right, top or bottom
-                topPos: '200px',
-                leftPos: '20px',
+                tabHandle: '.handle', // JQuery selector for the tab, can use #
+                speed: 300, // time to animate
+                action: 'click',  // action which will open the panel, e.g. 'hover'
+                offset: '200px', // panel dist from top or left (bottom or right if offsetReverse is true)
+                offsetReverse: false, // if true, panel is aligned with right or bottom of window
+                otherOffset: null, // if set, panel size is set to maintain this dist from bottom or right (top or left if offsetReverse)
+                handleOffset: null, // e.g. '10px'. If null, detects panel border to align handle nicely
+                handleOffsetReverse: false, // if true, handle aligned with right or bottom of panel 
                 bounceDistance: '50px', // how far 'bounce event will move everything
                 bounceTimes: 4, // how many bounces when 'bounce' is called
-                fixedPosition: false, // positioning: fixed? (otherwise absolute)
-                /* optional setting bottomPos: '10px', for left or right tabLocations */
-                positioning: 'absolute',
-                pathToTabImage: null,
+                positioning: 'absolute', // can also use fixed
+                pathToTabImage: null, // optional image to show in the tab
                 imageHeight: null,
                 imageWidth: null,
-                handleOffset: '0',
                 onLoadSlideOut: false, // slide out after DOM load
-                clickScreenToClose: true, // close when rest of screen clicked
+                clickScreenToClose: true, // close tab when rest of screen clicked
+                toggleButton: '.tab-opener', // not often used
                 onOpen: function(){}, // handler called after opening
                 onClose: function(){} // handler called after closing
             }, callerSettings||{});
 
-            settings.tabHandle = $(settings.tabHandle);
-            settings.tabHandle.addClass('ui-slideouttab-handle'); // need this to find it later
+            var edge = settings.tabLocation; 
+            var handle = settings.tabHandle = $(settings.tabHandle,panel);
+            panel.addClass('ui-slideouttab-panel');
+            panel.addClass('ui-slideouttab-'+edge);
+            if ( settings.offsetReverse ) panel.addClass('ui-slideouttab-panel-reverse');
+            handle.addClass('ui-slideouttab-handle'); // need this to find it later
+            if ( settings.handleOffsetReverse ) handle.addClass('ui-slideouttab-handle-reverse');
             settings.toggleButton = $(settings.toggleButton);
-
-            var obj = this;
-            if (settings.fixedPosition === true) {
-                settings.positioning = 'fixed';
-            } else {
-                settings.positioning = 'absolute';
-            }
 
             //ie6 doesn't do well with the fixed option
             if (document.all && !window.opera && !window.XMLHttpRequest) {
                 settings.positioning = 'absolute';
             }
 
-            //set initial tabHandle css
+            // apply an image if one is defined
             if (settings.pathToTabImage !== null) {
-                settings.tabHandle.css({
+                handle.css({
                 'background' : 'url('+settings.pathToTabImage+') no-repeat',
                 'width' : settings.imageWidth,
                 'height': settings.imageHeight
                 });
             }
 
-            settings.tabHandle.css({
+            handle.css({
                 'display': 'block',
-                'outline' : 'none',
                 'position' : 'absolute'
             });
 
-            obj.css({
-                'line-height' : '1',
+            panel.css({
                 'position' : settings.positioning
             });
 
-            /**
-             * Return the desired height of the panel, if a bottomPos is defined.
-             */
-            function getPanelHeight() {
-                return height = $(window).height() - (parseInt(settings.bottomPos) + parseInt(settings.topPos));
+            // set up alignment information based on settings
+            if ( edge === 'top' || edge === 'bottom' ){
+                settings.panelOffsetFrom = 
+                        settings.offsetReverse ? 'right' : 'left';
+                settings.handleOffsetFrom = 
+                        settings.handleOffsetReverse ? 'right' : 'left';
+            } else {
+                settings.panelOffsetFrom = 
+                        settings.offsetReverse ? 'bottom' : 'top';
+                settings.handleOffsetFrom = 
+                        settings.handleOffsetReverse ? 'bottom' : 'top';
             }
-
-            var properties = {
-                        containerWidth: parseInt(obj.outerWidth(), 10) + 'px',
-                        containerHeight: parseInt(obj.outerHeight(), 10) + 'px',
-                        tabWidth: parseInt(settings.tabHandle.outerWidth(), 10) + 'px',
-                        tabHeight: parseInt(settings.tabHandle.outerHeight(), 10) + 'px'
+            
+            /* autodetect the correct offset for the handle using appropriate panel border*/
+            if (settings.handleOffset === null) {
+                settings.handleOffset = '-'+borderWidth(panel,settings.handleOffsetFrom)+'px';
+            }
+            
+            var sizes = {
+                        panelWidth: parseInt(panel.outerWidth()+1, 10) + 'px',
+                        panelHeight: parseInt(panel.outerHeight()+1, 10) + 'px',
+                        handleWidth: parseInt(handle.outerWidth(), 10) + 'px',
+                        handleHeight: parseInt(handle.outerHeight()+1, 10) + 'px'
                     };
 
-            //set calculated css
-            if(settings.tabLocation === 'top' || settings.tabLocation === 'bottom') {
-                obj.css({'left' : settings.leftPos});
-                settings.tabHandle.css({'right' : settings.handleOffset + 'px'});
-            }
-
-            if(settings.tabLocation === 'top') {
-                obj.css({'top' : '-' + properties.containerHeight});
-                settings.tabHandle.css({'bottom' : '-' + properties.tabHeight});
-            }
-
-            if(settings.tabLocation === 'bottom') {
-                obj.css({'bottom' : '-' + properties.containerHeight, 'position' : 'fixed'});
-                settings.tabHandle.css({'top' : '-' + properties.tabHeight});
-
-            }
-
-            if(settings.tabLocation === 'left' || settings.tabLocation === 'right') {
-                obj.css({
-                    'height' : typeof settings.bottomPos == 'undefined' ?
-                            properties.containerHeight : getPanelHeight()+'px',
-                    'top' : settings.topPos
-                });
-
-                settings.tabHandle.css({'top' : settings.handleOffset + 'px'});
-
-                // window resize handler
-                if ( typeof settings.bottomPos != 'undefined' ) {
-                    $(window).resize(function() { obj.height(getPanelHeight() + 'px');});
+            // 
+            if(edge === 'top' || edge === 'bottom') {
+                /* set left or right edges */
+                panel.css( settings.panelOffsetFrom, settings.offset);
+                handle.css( settings.handleOffsetFrom, settings.handleOffset );
+                
+                // possibly drive the panel size
+                if ( settings.otherOffset !== null ) {
+                    panel.css( 'width', calculatePanelSize() + 'px' );
+                    // install resize handler
+                    $(window).resize(function() { 
+                        panel.css( 'width', calculatePanelSize() + 'px');
+                    });
+                }
+            
+                if(edge === 'top') {
+                    panel.css({'top' : '-' + sizes.panelHeight});
+                    handle.css({'bottom' : '-' + sizes.handleHeight});
+                }
+                else {
+                    panel.css({'bottom' : '-' + sizes.panelHeight, 'position' : 'fixed'});
+                    handle.css({'top' : '-' + sizes.handleHeight});
                 }
             }
 
-            if(settings.tabLocation === 'left') {
-                obj.css({ 'left': '-' + properties.containerWidth});
-                settings.tabHandle.css({'right' : '-' + properties.tabWidth});
+
+            if(edge === 'left' || edge === 'right') {
+                /* set top or bottom edge */
+                panel.css( settings.panelOffsetFrom, settings.offset );
+                handle.css( settings.handleOffsetFrom, settings.handleOffset);
+
+                // possibly drive the panel size
+                if ( settings.otherOffset !== null ) {
+                    panel.css( 'height', calculatePanelSize() + 'px' );
+                    // install resize handler
+                    $(window).resize(function() { 
+                        panel.css( 'height', calculatePanelSize() + 'px');
+                    });
+                }
+            
+                if(edge === 'left') {
+                    panel.css({ 'left': '-' + sizes.panelWidth});
+                    handle.css({'right' : '0'});
+                } else {
+                    panel.css({ 'right': '-' + sizes.panelWidth});
+                    handle.css({'left' : '0'});
+
+                    $('html').css('overflow-x', 'hidden');
+                }
             }
 
-            if(settings.tabLocation === 'right') {
-                obj.css({ 'right': '-' + properties.containerWidth});
-                settings.tabHandle.css({'left' : '-' + properties.tabWidth});
-
-                $('html').css('overflow-x', 'hidden');
-            }
-
-            //functions for animation events
-
-            settings.tabHandle.click(function(event){
+            handle.click(function(event){
                 event.preventDefault();
             });
             settings.toggleButton.click(function(event){
@@ -191,37 +238,38 @@
             });
 
             var slideIn = function() {
-                var iDimension;
-                switch ( settings.tabLocation )
+                var size;
+                switch ( edge )
                 {
                     case 'top':
                     case 'bottom':
-                        iDimension = properties.containerHeight;
+                        size = sizes.panelHeight;
                         break;
                     case 'left':
                     case 'right':
-                        iDimension = properties.containerWidth;
+                        size = sizes.panelWidth;
                 }
                 
                 var param = [];
-                param[settings.tabLocation] = '-' + iDimension;
-                obj.animate(param, settings.speed, settings.onClose()).removeClass('open');
+                param[edge] = '-' + size;
+                panel.animate(param, settings.speed, settings.onClose()).removeClass('ui-slideouttab-open');
             };
 
             var slideOut = function() {
                 var param = [];
-                param[settings.tabLocation] = '-3px';
-                obj.animate(param,  settings.speed, settings.onOpen()).addClass('open');
+                // show everything except the border along the edge we're on
+                param[edge] = '-'+borderWidth(panel,edge)+'px';
+                panel.animate(param,  settings.speed, settings.onOpen()).addClass('ui-slideouttab-open');
             };
             
             // animate the tab in and out
             var moveIn = [];
-            moveIn[settings.tabLocation] = '-=' + settings.bounceDistance;
+            moveIn[edge] = '-=' + settings.bounceDistance;
             var moveOut = [];
-            moveOut[settings.tabLocation] = '+=' + settings.bounceDistance;
+            moveOut[edge] = '+=' + settings.bounceDistance;
             
             var bounceIn = function() {
-                var temp = obj;
+                var temp = panel;
                 for ( var i = 0; i < settings.bounceTimes; i++ )
                 {
                     temp = temp.animate(moveIn,  settings.speed)
@@ -230,7 +278,7 @@
             };
             
             var bounceOut = function() {
-                var temp = obj;
+                var temp = panel;
                 for ( var i = 0; i < settings.bounceTimes; i++ )
                 {
                     temp = temp.animate(moveOut,  settings.speed)
@@ -239,7 +287,7 @@
             };
 
             var clickScreenToClose = function() {
-                obj.click(function(event){
+                panel.click(function(event){
                     event.stopPropagation();
                 });
 
@@ -254,15 +302,15 @@
             };
 
             var clickAction = function(){
-                settings.tabHandle.click(function(event){
-                    if (obj.hasClass('open')) {
+                handle.click(function(event){
+                    if (isOpen()) {
                         slideIn();
                     } else {
                         slideOut();
                     }
                 });
                 settings.toggleButton.click(function(event){
-                    if (obj.hasClass('open')) {
+                    if (isOpen()) {
                         slideIn();
                     } else {
                         slideOut();
@@ -273,32 +321,32 @@
             };
 
             var hoverAction = function(){
-                obj.hover(
+                panel.hover(
                     function(){
-                            if (!obj.hasClass('open')) {
-                                slideOut();
-                                    }
+                        if (!isOpen()) {
+                            slideOut();
+                        }
                     },
 
                     function(){
-                        if (obj.hasClass('open')) {
-                                setTimeout(slideIn, 1000);
+                        if (isOpen()) {
+                            setTimeout(slideIn, 1000);
                         }
                     });
 
-                    settings.tabHandle.click(function(event){
-                        if (obj.hasClass('open')) {
+                    handle.click(function(event){
+                        if (isOpen()) {
                             slideIn();
                         }
                     });
 
-                        settings.toggleButton.click(function(event){
-                            if (obj.hasClass('open')) {
-                                slideIn();
-                            } else {
-                                slideOut();
-                            }
-                        });
+                    settings.toggleButton.click(function(event){
+                        if (isOpen()) {
+                            slideIn();
+                        } else {
+                            slideOut();
+                        }
+                    });
 
                     if ( settings.clickScreenToClose )
                         clickScreenToClose();
@@ -323,8 +371,8 @@
                 slideOutOnLoad();
             }
             
-            settings.tabHandle.on('bounce', function(event){
-                if (obj.hasClass('open')) {
+            handle.on('bounce', function(event){
+                if (isOpen()) {
                     bounceIn();
                 } else {
                     bounceOut();

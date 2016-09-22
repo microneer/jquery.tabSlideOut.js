@@ -1,0 +1,22 @@
+body {
+    font-family: Open Sans, Helvetica, sans-serif;
+}
+#panel-1 .handle {
+    background-color: red;
+}
+#panel-1 {
+    border-color: red;
+}
+#panel-2 .handle {
+    background-color: orange;
+}
+#panel-2 {
+    border-color: orange;
+    border-width: 1px;
+}
+#panel-4 .handle {
+    background-color: blue;
+}
+#panel-4 {
+    border-color: blue;
+}
