@@ -52,7 +52,7 @@ You can leave out any options, and the following defaults are used:
 	handleOffsetReverse: false, // if true, handle aligned with right or bottom of panel 
 	bounceDistance: '50px', // how far bounce event will move everything
 	bounceTimes: 4, // how many bounces when 'bounce' is called
-	positioning: 'absolute', // can also use fixed
+	positioning: 'fixed', // can also use absolute, so tabs move when window scrolls
 	pathToTabImage: null, // optional image to show in the tab
 	imageHeight: null,
 	imageWidth: null,
