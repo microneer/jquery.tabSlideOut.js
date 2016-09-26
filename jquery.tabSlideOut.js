@@ -120,9 +120,9 @@
                 bounceDistance: '50px', // how far bounce event will move everything
                 bounceTimes: 4, // how many bounces when 'bounce' is called
                 positioning: 'fixed', // can also use absolute, so tabs move when window scrolls
-                pathToTabImage: null, // optional image to show in the tab
-                imageHeight: null,
-                imageWidth: null,
+                tabImage: null, // optional image to show in the tab
+                tabImageHeight: null, // optional IE8 and lower only, else autodetected size
+                tabImageWidth: null, // optional IE8 and lower only, else autodetected size
                 onLoadSlideOut: false, // slide out after DOM load
                 clickScreenToClose: true, // close tab when rest of screen clicked
                 toggleButton: '.tab-opener', // not often used
@@ -145,11 +145,24 @@
             }
 
             // apply an image if one is defined
-            if (settings.pathToTabImage !== null) {
+            if (settings.tabImage !== null) {
+                var imageHeight = 0;
+                var imageWidth = 0;
+                if (settings.tabImageHeight !== null && settings.tabImageWidth !== null) {
+                   imageHeight = settings.tabImageHeight;
+                   imageWidth = settings.tabImageWidth;
+                } else {
+                   var img = new Image();
+                   img.src = settings.tabImage;
+                   imageHeight = img.naturalHeight;
+                   imageWidth = img.naturalWidth;
+                }
+
+                handle.addClass('ui-slideouttab-handle-image');
                 handle.css({
-                'background' : 'url('+settings.pathToTabImage+') no-repeat',
-                'width' : settings.imageWidth,
-                'height': settings.imageHeight
+                    'background' : 'url('+settings.tabImage+') no-repeat',
+                    'width' : imageWidth,
+                    'height': imageHeight
                 });
             }
 

@@ -28,6 +28,10 @@
     background-color: grey;
 }
 
+.ui-slideouttab-handle-image {
+    transform: rotate(0);
+}
+
 .ui-slideouttab-right .ui-slideouttab-handle {
     transform-origin: 0% 0%;
     transform: rotate(-90deg) translate(-100%,-100%);   
