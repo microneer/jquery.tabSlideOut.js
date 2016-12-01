@@ -273,10 +273,10 @@
                 
                 var param = [];
                 param[edge] = '-' + size;
-                panel.animate(param, settings.speed, function(){
+                panel.removeClass('ui-slideouttab-open').animate(param, settings.speed, function(){
                     panel.trigger('slideouttabclose');
                     settings.onClose();
-                }).removeClass('ui-slideouttab-open');
+                });
             };
 
             var slideOut = function() {
@@ -284,9 +284,9 @@
                 // show everything except the border along the edge we're on
                 param[edge] = '-'+borderWidth(panel,edge)+'px';
                 panel.animate(param,  settings.speed, function(){
-                    panel.trigger('slideouttabopen');
+                    panel.addClass('ui-slideouttab-open').trigger('slideouttabopen');
                     settings.onOpen();
-                }).addClass('ui-slideouttab-open');
+                });
             };
             
             // animate the tab in and out
