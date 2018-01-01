@@ -1,9 +1,9 @@
 /*
-    tabSlideOUt v2.2
+    tabSlideOUt v2.4
 
     By William Paoli: http://wpaoli.building58.com
     Contributions by:
-        Michael Fielding / www.hawkip.com
+        Michael Fielding
     License: GPL v2.0
     Original location: http://code.google.com/p/tab-slide-out
 
@@ -45,6 +45,21 @@
 (function($){
     $.fn.tabSlideOut = function(callerSettings) {
 
+		/**
+		 * @param node Element to get the height of.
+		 * @return string e.g. '123px'
+		 */
+		function heightAsString( node ) {
+			return parseInt(node.outerHeight()+1, 10) + 'px';
+		}
+		/**
+		 * @param node Element to get the width of.
+		 * @return string e.g. '123px'
+		 */
+		function widthAsString( node ) {
+			return parseInt(node.outerWidth()+1, 10) + 'px';
+		}
+		
         /*
          * Get the width of the given border, in pixels.
          * 
@@ -109,7 +124,7 @@
             // param is an object, it's initialisation mode
             var settings = $.extend({
                 tabLocation: 'left', // left, right, top or bottom
-                tabHandle: '.handle', // JQuery selector for the tab, can use #
+                tabHandle: '.handle', // JQuery selector for the tab, can use any JQuery selector
                 speed: 300, // time to animate
                 action: 'click',  // action which will open the panel, e.g. 'hover'
                 offset: '200px', // panel dist from top or left (bottom or right if offsetReverse is true)
@@ -119,7 +134,6 @@
                 handleOffsetReverse: false, // if true, handle aligned with right or bottom of panel 
                 bounceDistance: '50px', // how far bounce event will move everything
                 bounceTimes: 4, // how many bounces when 'bounce' is called
-                positioning: 'fixed', // can also use absolute, so tabs move when window scrolls
                 tabImage: null, // optional image to show in the tab
                 tabImageHeight: null, // optional IE8 and lower only, else autodetected size
                 tabImageWidth: null, // optional IE8 and lower only, else autodetected size
@@ -132,19 +146,17 @@
 
             var edge = settings.tabLocation; 
             var handle = settings.tabHandle = $(settings.tabHandle,panel);
-            panel.addClass('ui-slideouttab-panel');
-            panel.addClass('ui-slideouttab-'+edge);
-            if ( settings.offsetReverse ) panel.addClass('ui-slideouttab-panel-reverse');
+			
+            panel.addClass('ui-slideouttab-panel')
+				.addClass('ui-slideouttab-'+edge);
+            if ( settings.offsetReverse ) 
+				panel.addClass('ui-slideouttab-panel-reverse');
             handle.addClass('ui-slideouttab-handle'); // need this to find it later
-            if ( settings.handleOffsetReverse ) handle.addClass('ui-slideouttab-handle-reverse');
+            if ( settings.handleOffsetReverse ) 
+				handle.addClass('ui-slideouttab-handle-reverse');
             settings.toggleButton = $(settings.toggleButton);
 
-            //ie6 doesn't do well with the fixed option
-            if (document.all && !window.opera && !window.XMLHttpRequest) {
-                settings.positioning = 'absolute';
-            }
-
-            // apply an image if one is defined
+            // apply an image to the tab if one is defined
             if (settings.tabImage !== null) {
                 var imageHeight = 0;
                 var imageWidth = 0;
@@ -166,16 +178,7 @@
                 });
             }
 
-            handle.css({
-                'display': 'block',
-                'position' : 'absolute'
-            });
-
-            panel.css({
-                'position' : settings.positioning
-            });
-
-            // set up alignment information based on settings
+            // determine whether panel and handle are positioned from top, bottom, left, or right
             if ( edge === 'top' || edge === 'bottom' ){
                 settings.panelOffsetFrom = 
                         settings.offsetReverse ? 'right' : 'left';
@@ -192,15 +195,7 @@
             if (settings.handleOffset === null) {
                 settings.handleOffset = '-'+borderWidth(panel,settings.handleOffsetFrom)+'px';
             }
-            
-            var sizes = {
-                        panelWidth: parseInt(panel.outerWidth()+1, 10) + 'px',
-                        panelHeight: parseInt(panel.outerHeight()+1, 10) + 'px',
-                        handleWidth: parseInt(handle.outerWidth(), 10) + 'px',
-                        handleHeight: parseInt(handle.outerHeight()+1, 10) + 'px'
-                    };
-
-            // 
+			
             if(edge === 'top' || edge === 'bottom') {
                 /* set left or right edges */
                 panel.css( settings.panelOffsetFrom, settings.offset);
@@ -216,17 +211,12 @@
                 }
             
                 if(edge === 'top') {
-                    panel.css({'top' : '-' + sizes.panelHeight});
-                    handle.css({'bottom' : '-' + sizes.handleHeight});
+                    handle.css({'bottom' : '-' + heightAsString(handle)});
                 }
                 else {
-                    panel.css({'bottom' : '-' + sizes.panelHeight, 'position' : 'fixed'});
-                    handle.css({'top' : '-' + sizes.handleHeight});
+                    handle.css({'top' : '-' + heightAsString(handle)});
                 }
-            }
-
-
-            if(edge === 'left' || edge === 'right') {
+            } else {
                 /* set top or bottom edge */
                 panel.css( settings.panelOffsetFrom, settings.offset );
                 handle.css( settings.handleOffsetFrom, settings.handleOffset);
@@ -241,13 +231,9 @@
                 }
             
                 if(edge === 'left') {
-                    panel.css({ 'left': '-' + sizes.panelWidth});
                     handle.css({'right' : '0'});
                 } else {
-                    panel.css({ 'right': '-' + sizes.panelWidth});
                     handle.css({'left' : '0'});
-
-                    $('html').css('overflow-x', 'hidden');
                 }
             }
 
@@ -257,36 +243,18 @@
             settings.toggleButton.click(function(event){
                 event.preventDefault();
             });
+			
+			// now everything is set up, add the class which enables CSS tab animation
+			panel.addClass('ui-slideouttab-ready');
 
             var slideIn = function() {
-                var size;
-                switch ( edge )
-                {
-                    case 'top':
-                    case 'bottom':
-                        size = sizes.panelHeight;
-                        break;
-                    case 'left':
-                    case 'right':
-                        size = sizes.panelWidth;
-                }
-                
-                var param = [];
-                param[edge] = '-' + size;
-                panel.removeClass('ui-slideouttab-open').animate(param, settings.speed, function(){
-                    panel.trigger('slideouttabclose');
-                    settings.onClose();
-                });
+                panel.removeClass('ui-slideouttab-open').trigger('slideouttabclose');
+                settings.onClose();
             };
 
             var slideOut = function() {
-                var param = [];
-                // show everything except the border along the edge we're on
-                param[edge] = '-'+borderWidth(panel,edge)+'px';
-                panel.animate(param,  settings.speed, function(){
-                    panel.addClass('ui-slideouttab-open').trigger('slideouttabopen');
-                    settings.onOpen();
-                });
+				panel.addClass('ui-slideouttab-open').trigger('slideouttabopen');
+				settings.onOpen();
             };
             
             // animate the tab in and out
@@ -294,13 +262,13 @@
             moveIn[edge] = '-=' + settings.bounceDistance;
             var moveOut = [];
             moveOut[edge] = '+=' + settings.bounceDistance;
-            
+			
             var bounceIn = function() {
                 var temp = panel;
                 for ( var i = 0; i < settings.bounceTimes; i++ )
                 {
                     temp = temp.animate(moveIn,  settings.speed)
-                       .animate(moveOut,  settings.speed);
+					   .animate(moveOut,  settings.speed);
                 }
                 panel.trigger('slideouttabbounce');
             };

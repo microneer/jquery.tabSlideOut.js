@@ -1,42 +1,60 @@
-<script src="https://use.fontawesome.com/2be9406092.js"></script>
-<script src="https://rawgit.com/hawk-ip/jquery.tabSlideOut.js/master/jquery.tabSlideOut.js"></script>
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>JQuery tabSlideOut plugin demo</title>
+        <link rel="stylesheet" href="../jquery.tabSlideOut.css">
+		<link rel="stylesheet" href="demo.css">
+		<script src="https://use.fontawesome.com/2be9406092.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="../jquery.tabSlideOut.js"></script>
+		<script src="demo.js"></script>
+    </head>
+    <body>
+		<h1>jQuery.tabSlideOut Demo</h1>
 
-<h1>jQuery.tabSlideOut Demo</h1>
+		<div id="left">
+			<a class="handle ui-slideouttab-handle-rounded">Left<i class="fa fa-icon fa-television"></i></a>
+			<p>This panel doesn't close automatically when somewhere else is clicked.</p>
+			<p>And it can be controlled from the buttons in the main window.</p>
+			<textarea rows="4">This is some content</textarea>
+		</div>
 
-<div id="left">
-	<a class="handle ui-slideouttab-handle-rounded">Left<i class="fa fa-icon fa-television"></i></a>
-	<p>This panel doesn't close automatically when somewhere else is clicked.</p>
-	<p>And it can be controlled from the buttons in the main window.</p>
-</div>
+		<div id="right">
+			<a class="handle ui-slideouttab-handle ui-slideouttab-handle-rounded">Right<i class="fa fa-icon fa-bank"></i></a>
+			<p>This panel opens by default.</p>
+			<p>Line 1</p>
+			<p>Line 2</p>
+			<p>Line 3</p>
+			<textarea rows="4">This is some content</textarea>
+		</div>
 
-<div id="right">
-	<a class="handle ui-slideouttab-handle-rounded">Right<i class="fa fa-icon fa-bank"></i></a>
-	<p>Some content in this panel.</p>
-	<p>Line 1</p>
-	<p>Line 2</p>
-	<p>Line 3</p>
-</div>
+		<div id="top">
+			<a class="handle ui-slideouttab-handle-rounded">Top (hover)</a>
+			<p>Some content in this panel, which stretches over many lines.</p>
+			<p>Line 1</p>
+			<p>Line 2</p>
+			<p>Line 3</p>
+			<textarea rows="4">This is some content</textarea>
+		</div>
 
-<div id="top">
-	<a class="handle ui-slideouttab-handle-rounded">Top (hover)</a>
-	<p>Some content in this panel, which stretches over many lines.</p>
-	<p>Line 1</p>
-	<p>Line 2</p>
-	<p>Line 3</p>
-</div>
+		<div id="bottom">
+			<a class="handle ui-slideouttab-handle-rounded">Bottom<i class="fa fa-icon fa-user"></i></a>
+			<p>This panel closes automatically when somewhere else is clicked.</p>
+			<textarea rows="4">This is some content</textarea>
+		</div>
 
-<div id="bottom">
-	<a class="handle ui-slideouttab-handle-rounded">Bottom<i class="fa fa-icon fa-user"></i></a>
-	<p>This panel closes automatically when somewhere else is clicked.</p>
-</div>
+		<h2>Methods</h2>
+		<p>Open, close, toggle and bounce programmatically:</p>
+		<button id="open" class="lefty">Click to open Left</button>
+		<button id="close" disabled="true" class="lefty">Click to close Left</button>
+		<button id="toggle" class="lefty">Click to toggle Left</button>
+		<button id="bounce">Click to bounce all</button>
+		<button id="expand">Click to resize panels</button>
+				
+		<h2>Events</h2>
+		<pre id="events"></pre>
 
-<h2>Methods</h2>
-<p>Open, close, toggle and bounce programmatically:</p>
-<button id="open">Click to open Left</button>
-<button id="close" disabled="true">Click to close Left</button>
-<button id="toggle">Click to toggle Left</button>
-<button id="bounce">Click to bounce Left</button>
-		
-<h2>Events</h2>
-<pre id="events"></pre>
-
+	</body>
+</html>

@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    
     var left = $('#left').tabSlideOut({
       tabLocation: 'left',
       clickScreenToClose: false,
@@ -19,15 +18,15 @@ $(document).ready(function() {
     $('#right').tabSlideOut({
       tabLocation: 'right',
       offsetReverse: true,
-      handleOffsetReverse: true
+      handleOffsetReverse: true,
+      onLoadSlideOut: true
     });
     
     $('#top').tabSlideOut({
       tabLocation: 'top',
       action: 'hover',
       handleOffsetReverse: true,
-      offsetReverse: true,
-      onLoadSlideOut: true
+      offsetReverse: true
     });
     
     $('#bottom').tabSlideOut({
@@ -35,11 +34,27 @@ $(document).ready(function() {
       offset: '40px',
       otherOffset: '40px'
     });
-    
+	
     /* programmatically drive the left tab */
-    $('button').click(function(event){
-        left.tabSlideOut( /*command*/$(event.target).attr('id') );
+    $('button.lefty').click(function(event){
+        left.tabSlideOut( /*extract command out of the id of the button`*/$(event.target).attr('id') );
     });
+    
+	/* expand the content in each tab */
+	$('#expand').click(function(e){
+		$('textarea').each(function(i,n){
+			var ta = $(n);
+			ta.attr('rows','10').attr('cols','60');
+		});
+	});
+
+	/* expand the content in each tab */
+	$('#bounce').click(function(e){
+		$('.ui-slideouttab-panel').each(function(i,n){
+			var tab = $(n);
+			tab.tabSlideOut('bounce');
+		});
+	});
     
     /* register event handler */
     $(document).on('slideouttabopen slideouttabclose slideouttabbounce',function(event){
