@@ -67,6 +67,7 @@ You can leave out any options, and the following defaults are used:
 	tabLocation: 'left', // left, right, top or bottom
 	tabHandle: '.handle', // JQuery selector for the tab, can use any JQuery selector
 	action: 'click',  // action which will open the panel, e.g. 'hover'
+	hoverTimeout: 5000, // ms to keep tab open after no longer hovered - only if action = 'hover'
 	offset: '200px', // panel dist from top or left (bottom or right if offsetReverse is true)
 	offsetReverse: false, // if true, panel is offset from  right or bottom of window instead of left or top
 	otherOffset: null, // if set, panel size is also set to maintain this dist from bottom or right of view port (top or left if offsetReverse)
