@@ -15,9 +15,9 @@
 	
 		<div id="my-tab"><span class="handle">Click me</span>Hello World</div>
 
-	example JavaScript:
+	example JavaScript (puts the tab on the right, and opens it on hover rather than click):
 	
-        $('#my-tab').tabSlideOut( {} );
+        $('#my-tab').tabSlideOut( {'tabLocation':'right','action':'hover'} );
 		
 	Style the tab panel and handle using CSS. Add the class ui-slideouttab-handle-rounded to handles to give them 
     rounded outer corners.

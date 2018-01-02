@@ -8,33 +8,56 @@ is used to attract attention to a tab).
 
 Demo
 ----
- *  [Demonstration on JSFiddle](http://jsfiddle.net/gh/get/jquery/1.11/hawk-ip/jquery.tabSlideOut.js/tree/master/demo)
+ *  [Demonstration on JSFiddle]()
 
 Usage
 -----
 
-Create a handle element (div, a, img, span etc.) inside a div (typically) which will be the 
-content panel. By default the selector for the handle is .handle (scope is limited to the panel).
+    To use this you need an element for the tab panel content ('panel'), and inside it an element for the 
+	tab which will stick out from the window edge and be clickable ('handle'). By default the selector 
+	for handles is '.handle'.
 
-HTML:
+    example HTML:
+	
+		<div id="my-tab"><span class="handle">Click me</span>Hello World</div>
 
-	<div id="slide-out-div">
-		<a class="handle">Click me</a>
-		<p>This is the panel content.</p>
-	</div>
+	example JavaScript (puts the tab on the right, and opens it on hover rather than click):
+	
+        $('#my-tab').tabSlideOut( {'tabLocation':'right','action':'hover'} );
+		
+	Style the tab panel and handle using CSS. Add the class ui-slideouttab-handle-rounded to handles to give them 
+    rounded outer corners.
 
+Methods
+------
 
-In your javascript:
+    You can use some methods to programmatically interact with tabs. Methods except 'isOpen' are chainable.
 
-	$('#slide-out-div').tabSlideOut({
-		tabLocation: 'right' // optional, default is 'left'
-	});
+        $('#my-tab').tabSlideOut('isOpen'); // return true or false
+        $('#my-tab').tabSlideOut('open'); // opens it
+        $('#my-tab').tabSlideOut('close'); // closes it
+        $('#my-tab').tabSlideOut('toggle'); // toggles it
+        $('#my-tab').tabSlideOut('bounce'); // bounces the tab
+		
+	You can also send JQuery events to initiate actions:
+	
+	    $('#my-tab').trigger('open'); // opens it
+        $('#my-tab').trigger('close'); // closes it
+        $('#my-tab').trigger('toggle'); // toggles it
+        $('#my-tab').trigger('bounce'); // bounces the tab
 
-The handle and panel will be positioned by the plugin - you don't need to apply positioning. 
-Init options let you choose where to place the tab (which edge, offset from the top/bottom/left/right) and
-where to place the handle relative to the content panel. 
+Events
+------
 
-Styling, such as borders, colours, hover effects etc. should be put in your own CSS.
+    Three events are defined and can be caught when tabs open and close:
+
+        $(document).on('slideouttabopen slideouttabclose slideouttabbounce',function(event){
+            var $panel = $(event.target);
+            var eventType = event.type;
+            // your code here
+        });
+
+	Features are demonstrated on the demo page.
 
 Options
 -------
@@ -42,50 +65,26 @@ Options
 You can leave out any options, and the following defaults are used:
 
 	tabLocation: 'left', // left, right, top or bottom
-	tabHandle: '.handle', // JQuery selector for the tab, can use #
-	speed: 300, // time to animate
-	action: 'click',  // action which will open the panel, 'hover' or 'click'
+	tabHandle: '.handle', // JQuery selector for the tab, can use any JQuery selector
+	action: 'click',  // action which will open the panel, e.g. 'hover'
 	offset: '200px', // panel dist from top or left (bottom or right if offsetReverse is true)
-	offsetReverse: false, // if true, panel is aligned with right or bottom of window
-	otherOffset: null, // if set, panel size is set to maintain this dist from bottom or right (top or left if offsetReverse)
-	handleOffset: null, // e.g. '10px'. If null, detects panel border to align handle nicely
-	handleOffsetReverse: false, // if true, handle aligned with right or bottom of panel 
+	offsetReverse: false, // if true, panel is offset from  right or bottom of window instead of left or top
+	otherOffset: null, // if set, panel size is also set to maintain this dist from bottom or right of view port (top or left if offsetReverse)
+	handleOffset: null, // e.g. '10px'. If null, detects panel border to align handle nicely on edge
+	handleOffsetReverse: false, // if true, handle is offset from right or bottom of panel instead of left or top
 	bounceDistance: '50px', // how far bounce event will move everything
 	bounceTimes: 4, // how many bounces when 'bounce' is called
-	positioning: 'fixed', // can also use absolute, so tabs move when window scrolls
-	pathToTabImage: null, // optional image to show in the tab
-	imageHeight: null,
-	imageWidth: null,
+	bounceSpeed: 300, // time to animate bounces
+	tabImage: null, // optional image to show in the tab
+	tabImageHeight: null, // optional IE8 and lower only, else autodetected size
+	tabImageWidth: null, // optional IE8 and lower only, else autodetected size
 	onLoadSlideOut: false, // slide out after DOM load
-	clickScreenToClose: true, // close tab when rest of screen clicked
-	toggleButton: '.tab-opener', // not often used
+	clickScreenToClose: true, // close tab when somewhere outside the tab is clicked
+	clickScreenToCloseFilters: ['.ui-slideouttab-panel'], // if click target or parents match any of these, click won't close this tab
 	onOpen: function(){}, // handler called after opening
 	onClose: function(){} // handler called after closing
 
 Add the class ui-slideouttab-handle-rounded to a handle to give it rounded outer corners.
-
-
-Methods
--------
-
-You can programmatically interact with the tab:
-
-	$('#slide-out-div').tabSlideOut('isOpen'); // returns true or false
-	$('#slide-out-div').tabSlideOut('open'); // opens it
-	$('#slide-out-div').tabSlideOut('close'); // closes it
-	$('#slide-out-div').tabSlideOut('toggle'); // toggles it
-	$('#slide-out-div').tabSlideOut('bounce'); // bounces to attract attention
-
-Events
-------
-
-Three events are defined. Respond to one or more of them as follows:
-
-	$(document).on('slideouttabopen slideouttabclose slideouttabbounce',function(event){
-		var $panel = $(event.target);
-		var eventType = event.type;
-		// your code here
-	});
 	
 Licence
 -------
