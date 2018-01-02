@@ -10,6 +10,7 @@ body {
 #right {
     border-color: orange;
     border-width: 5px;
+    width: 20em;
 }
 #right .handle {
     background-color: orange;

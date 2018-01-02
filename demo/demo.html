@@ -18,31 +18,35 @@
 			<a class="handle ui-slideouttab-handle-rounded">Left<i class="fa fa-icon fa-television"></i></a>
 			<p>This panel doesn't close automatically when somewhere else is clicked.</p>
 			<p>And it can be controlled from the buttons in the main window.</p>
+			<p>Note also the support for Font Awesome icons in the tab handles.<p>
 			<textarea rows="4">This is some content</textarea>
 		</div>
 
 		<div id="right">
-			<a class="handle ui-slideouttab-handle ui-slideouttab-handle-rounded">Right<i class="fa fa-icon fa-bank"></i></a>
+			<a id="right-handle" class="handle ui-slideouttab-handle ui-slideouttab-handle-rounded">Right<i class="fa fa-icon fa-bank"></i></a>
 			<p>This panel opens by default.</p>
-			<p>Line 1</p>
-			<p>Line 2</p>
-			<p>Line 3</p>
-			<textarea rows="4">This is some content</textarea>
+			<p>
+				This tab will close when when another part of the page is clicked, but not if the checkbox below is 
+				checked and never when a button is clicked.
+			</p>
+			<input type="checkbox" id="keepTabOpen" name="keepTabOpen" value="keepTabOpen">
+			<label for="keepTabOpen">Keep tab open</label>
+			<br>
+			<textarea rows="4">This is some content which can be resized</textarea>
 		</div>
 
 		<div id="top">
 			<a class="handle ui-slideouttab-handle-rounded">Top (hover)</a>
-			<p>Some content in this panel, which stretches over many lines.</p>
-			<p>Line 1</p>
-			<p>Line 2</p>
-			<p>Line 3</p>
-			<textarea rows="4">This is some content</textarea>
+			<p>This tab is set to bounce faster, longer, and less than the default values used by the other tabs.</p>
+			<p>It is also offset from the right side, and its tab is offset from the right too.</p>
+			<textarea rows="4">This is some content which can be resized by the button below.</textarea>
 		</div>
 
 		<div id="bottom">
 			<a class="handle ui-slideouttab-handle-rounded">Bottom<i class="fa fa-icon fa-user"></i></a>
-			<p>This panel closes automatically when somewhere else is clicked.</p>
-			<textarea rows="4">This is some content</textarea>
+			<p>This panel closes automatically when somewhere else is clicked, except another panel (default behaviour).</p>
+			<p>It has both an offset and an otherOffset, meaning its edges stay a constant distance from the viewport edges.</p>
+			<textarea rows="4">This is some content which can be resized by the button in the main window.</textarea>
 		</div>
 
 		<h2>Methods</h2>
@@ -51,9 +55,12 @@
 		<button id="close" disabled="true" class="lefty">Click to close Left</button>
 		<button id="toggle" class="lefty">Click to toggle Left</button>
 		<button id="bounce">Click to bounce all</button>
-		<button id="expand">Click to resize panels</button>
+		<button id="expand">Click to resize textareas</button>
 				
 		<h2>Events</h2>
+		<p>
+			Each slideoutabxxxxx event will be recorded below.
+		</p>
 		<pre id="events"></pre>
 
 	</body>

@@ -4,34 +4,40 @@
     By William Paoli: http://wpaoli.building58.com
     Contributions by:
         Michael Fielding
-    License: GPL v2.0
+    License: GPL v3.0
     Original location: http://code.google.com/p/tab-slide-out
 
-    To use you must have a div, a, img, span etc. for the handle, inside a div which
-    will be the panel. By default the selector for handles is .handle
+    To use this you need an element for the tab panel content ('panel'), and inside it an element for the 
+	tab which will stick out from the window edge and be clickable ('handle'). By default the selector 
+	for handles is '.handle'.
 
-    example:
+    example HTML:
+	
+		<div id="my-tab"><span class="handle">Click me</span>Hello World</div>
 
-        $('#slide-out-div').tabSlideOut({
-                tabHandle: '.handle', //selector for the tab
-        });
+	example JavaScript:
+	
+        $('#my-tab').tabSlideOut( {} );
+		
+	Style the tab panel and handle using CSS. Add the class ui-slideouttab-handle-rounded to handles to give them 
+    rounded outer corners.
 
-    You can leave out most options and set the properties using css.
+    You can use some methods to programmatically interact with tabs. Methods except 'isOpen' are chainable.
 
-    There is an optional setting bottomPos which, when set, fixes the gap between the window
-    bottom edge and the panel bottom - the panel is resized with the window. This only
-    really makes sense if positioning: 'fixed', and only works if tabLocation is
-    left or right.
+        $('#my-tab').tabSlideOut('isOpen'); // return true or false
+        $('#my-tab').tabSlideOut('open'); // opens it
+        $('#my-tab').tabSlideOut('close'); // closes it
+        $('#my-tab').tabSlideOut('toggle'); // toggles it
+        $('#my-tab').tabSlideOut('bounce'); // bounces the tab
+		
+	You can also send JQuery events to initiate actions:
+	
+	    $('#my-tab').trigger('open'); // opens it
+        $('#my-tab').trigger('close'); // closes it
+        $('#my-tab').trigger('toggle'); // toggles it
+        $('#my-tab').trigger('bounce'); // bounces the tab
 
-    You can use some methods too:
-
-        $('#slide-out-div').tabSlideOut('isOpen'); // return true or false
-        $('#slide-out-div').tabSlideOut('open'); // opens it
-        $('#slide-out-div').tabSlideOut('close'); // closes it
-        $('#slide-out-div').tabSlideOut('toggle'); // toggles it
-        $('#slide-out-div').tabSlideOut('bounce'); // bounces the tab
-
-    Three events are defined, respond to one or more of them as follows:
+    Three events are defined and can be caught when tabs open and close:
 
         $(document).on('slideouttabopen slideouttabclose slideouttabbounce',function(event){
             var $panel = $(event.target);
@@ -39,8 +45,7 @@
             // your code here
         });
 
-    Add the class ui-slideouttab-handle-rounded to handles to give them 
-    rounded outer corners.
+	Features are demonstrated on the related demo page.
 */
 (function($){
     $.fn.tabSlideOut = function(callerSettings) {
@@ -72,15 +77,6 @@
         }
 
         /**
-         * True if the tab is open.
-         * 
-         * @returns boolean
-         */
-        function isOpen() {
-            return panel.hasClass('ui-slideouttab-open');
-        }
-        
-        /**
          * Return the desired height of the panel to maintain both offsets.
          */
         function calculatePanelSize() {
@@ -92,29 +88,35 @@
         }
 
         var panel = this;
-            
+      
+        /**
+         * True if the tab is open.
+         * 
+         * @returns boolean
+         */
+        function isOpen() {
+            return panel.hasClass('ui-slideouttab-open');
+        }
+        
         if ( typeof callerSettings == 'string' )
         {
             // param is a string, use command mode
             switch ( callerSettings )
             {
                 case 'open':
-                    if ( !isOpen() )
-                        this.children('.ui-slideouttab-handle').click();
-                    break;
+					this.trigger('open');
+                    return this;
                 case 'close':
-                    if ( isOpen() )
-                        this.children('.ui-slideouttab-handle').click();
-                    break;
+					this.trigger('close');
+                    return this;
                 case 'isOpen':
                     return isOpen();
-                    break;
                 case 'toggle':
-                    this.children('.ui-slideouttab-handle').click();
-                    break;
+                    this.trigger('toggle');
+                    return this;
                 case 'bounce':
-                    this.children('.ui-slideouttab-handle').trigger('bounce');
-                    break;
+                    this.trigger('bounce');
+                    return this;
                 default:
                     throw "Invalid tabSlideOut command";
             }
@@ -125,21 +127,21 @@
             var settings = $.extend({
                 tabLocation: 'left', // left, right, top or bottom
                 tabHandle: '.handle', // JQuery selector for the tab, can use any JQuery selector
-                speed: 300, // time to animate
                 action: 'click',  // action which will open the panel, e.g. 'hover'
                 offset: '200px', // panel dist from top or left (bottom or right if offsetReverse is true)
-                offsetReverse: false, // if true, panel is aligned with right or bottom of window
-                otherOffset: null, // if set, panel size is set to maintain this dist from bottom or right (top or left if offsetReverse)
-                handleOffset: null, // e.g. '10px'. If null, detects panel border to align handle nicely
-                handleOffsetReverse: false, // if true, handle aligned with right or bottom of panel 
+                offsetReverse: false, // if true, panel is offset from  right or bottom of window instead of left or top
+                otherOffset: null, // if set, panel size is also set to maintain this dist from bottom or right of view port (top or left if offsetReverse)
+                handleOffset: null, // e.g. '10px'. If null, detects panel border to align handle nicely on edge
+                handleOffsetReverse: false, // if true, handle is offset from right or bottom of panel instead of left or top
                 bounceDistance: '50px', // how far bounce event will move everything
                 bounceTimes: 4, // how many bounces when 'bounce' is called
+                bounceSpeed: 300, // time to animate bounces
                 tabImage: null, // optional image to show in the tab
                 tabImageHeight: null, // optional IE8 and lower only, else autodetected size
                 tabImageWidth: null, // optional IE8 and lower only, else autodetected size
                 onLoadSlideOut: false, // slide out after DOM load
-                clickScreenToClose: true, // close tab when rest of screen clicked
-                toggleButton: '.tab-opener', // not often used
+                clickScreenToClose: true, // close tab when somewhere outside the tab is clicked
+                clickScreenToCloseFilters: ['.ui-slideouttab-panel'], // if click target or parents match any of these, click won't close this tab
                 onOpen: function(){}, // handler called after opening
                 onClose: function(){} // handler called after closing
             }, callerSettings||{});
@@ -247,17 +249,25 @@
 			// now everything is set up, add the class which enables CSS tab animation
 			panel.addClass('ui-slideouttab-ready');
 
-            var slideIn = function() {
-                panel.removeClass('ui-slideouttab-open').trigger('slideouttabclose');
-                settings.onClose();
-            };
+			var close = function() {
+				panel.removeClass('ui-slideouttab-open').trigger('slideouttabclose');
+				settings.onClose();
+			};
 
-            var slideOut = function() {
+			var open = function() {
 				panel.addClass('ui-slideouttab-open').trigger('slideouttabopen');
 				settings.onOpen();
-            };
-            
-            // animate the tab in and out
+			};
+			
+			var toggle = function() {
+				if (isOpen()) {
+					close();
+				} else {
+					open();
+				}
+			};
+		  
+            // animate the tab in and out when 'bounced'
             var moveIn = [];
             moveIn[edge] = '-=' + settings.bounceDistance;
             var moveOut = [];
@@ -267,8 +277,8 @@
                 var temp = panel;
                 for ( var i = 0; i < settings.bounceTimes; i++ )
                 {
-                    temp = temp.animate(moveIn,  settings.speed)
-					   .animate(moveOut,  settings.speed);
+                    temp = temp.animate(moveIn,  settings.bounceSpeed)
+					   .animate(moveOut,  settings.bounceSpeed);
                 }
                 panel.trigger('slideouttabbounce');
             };
@@ -277,101 +287,89 @@
                 var temp = panel;
                 for ( var i = 0; i < settings.bounceTimes; i++ )
                 {
-                    temp = temp.animate(moveOut,  settings.speed)
-                       .animate(moveIn,  settings.speed);
+                    temp = temp.animate(moveOut,  settings.bounceSpeed)
+                       .animate(moveIn,  settings.bounceSpeed);
                 }
                 panel.trigger('slideouttabbounce');
             };
 
             // handle clicks in rest of document to close tabs if they're open
-            var clickScreenToClose = function() {
-                panel.click(function(event){
-                    event.stopPropagation();
-                });
-
-                settings.toggleButton.click(function(event){
-                    event.stopPropagation();
-                });
-
-
-                $(document).click(function(){
-                    if ( isOpen() ){
-                        slideIn();
+			if ( settings.clickScreenToClose ) {
+				// install a click handler to close tab if anywhere outside the tab is clicked,
+				// that isn't filtered out by the configured filters
+                $(document).click(function(event){
+					// first check the tab is open and the click isn't inside it
+                    if ( isOpen() && !panel[0].contains(event.target) ){
+						// something other than this panel was clicked
+						var clicked = $(event.target);
+						
+						// check to see if any filters return true
+						for ( var i=0; i< settings.clickScreenToCloseFilters.length; i++ ) {
+							var filter = settings.clickScreenToCloseFilters[i];
+							if ( typeof filter === 'string' ) {
+								// checked clicked element itself, and all parents
+								if ( clicked.is(filter) || clicked.parents().is(filter)) {
+									return; // don't close the tab
+								}
+							} else if ( typeof filter === 'function' ) {
+								// call custom filter
+								if ( filter.call(panel,event) )
+									return; // don't close the tab
+							}
+						}
+						
+						// we haven't returned true from any filter, so close the tab
+                        close();
                     }
                 });
             };
-
-            var clickAction = function(){
+			
+            //choose which type of action to bind
+            if (settings.action === 'click') {
                 handle.click(function(event){
-                    if (isOpen()) {
-                        slideIn();
-                    } else {
-                        slideOut();
-                    }
+					toggle();
                 });
-                settings.toggleButton.click(function(event){
-                    if (isOpen()) {
-                        slideIn();
-                    } else {
-                        slideOut();
-                    }
-                });
-                if ( settings.clickScreenToClose )
-                    clickScreenToClose();
-            };
-
-            var hoverAction = function(){
+            } else if (settings.action === 'hover') {
                 panel.hover(
                     function(){
                         if (!isOpen()) {
-                            slideOut();
+                            open();
                         }
                     },
 
                     function(){
                         if (isOpen()) {
-                            setTimeout(slideIn, 1000);
+                            setTimeout(close, 1000);
                         }
-                    });
+				});
 
-                    handle.click(function(event){
-                        if (isOpen()) {
-                            slideIn();
-                        }
-                    });
-
-                    settings.toggleButton.click(function(event){
-                        if (isOpen()) {
-                            slideIn();
-                        } else {
-                            slideOut();
-                        }
-                    });
-
-                    if ( settings.clickScreenToClose )
-                        clickScreenToClose();
-
-            };
-
-            var slideOutOnLoad = function(){
-                slideIn();
-                setTimeout(slideOut, 500);
-            };
-
-            //choose which type of action to bind
-            if (settings.action === 'click') {
-                clickAction();
-            }
-
-            if (settings.action === 'hover') {
-                hoverAction();
+				handle.click(function(event){
+					if (isOpen()) {
+						close();
+					}
+				});
             }
 
             if (settings.onLoadSlideOut) {
-                slideOutOnLoad();
+                open();
+                setTimeout(open, 500);
             }
             
-            handle.on('bounce', function(event){
+			// custom event handlers -------
+			panel.on('open', function(event) {
+                if (!isOpen()) {
+                    open();
+                }
+			});
+			panel.on('close', function(event) {
+                if (isOpen()) {
+                    close();
+                }
+			});
+			panel.on('toggle', function(event) {
+				toggle();
+			});
+            panel.on('bounce', function(event){
                 if (isOpen()) {
                     bounceIn();
                 } else {
