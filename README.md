@@ -8,7 +8,6 @@ is used to attract attention to a tab).
 
 Demo
 ----
- *  [Demonstration on JSFiddle]()
 
 Usage
 -----
