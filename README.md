@@ -8,30 +8,34 @@ is used to attract attention to a tab).
 
 Demo
 ----
- *  [Demonstration on JSFiddle](http://jsfiddle.net/microneer/6kvus71q/2/)
+ *  [Demonstration on JSFiddle](http://jsfiddle.net/6kvus71q/27/)
 
 Usage
 -----
 
-    To use this you need an element for the tab panel content ('panel'), and inside it an element for the 
-	tab which will stick out from the window edge and be clickable ('handle'). By default the selector 
-	for handles is '.handle'.
+To use this you need an element for the tab panel content ('panel'), and inside it an element for the 
+tab which will stick out from the window edge and be clickable ('handle'). By default the selector 
+for handles is '.handle'.
 
-    example HTML:
+example HTML:
 	
-		<div id="my-tab"><span class="handle">Click me</span>Hello World</div>
+	<div id="my-tab"><span class="handle">Click me</span>Hello World</div>
 
-	example JavaScript (puts the tab on the right, and opens it on hover rather than click):
+example JavaScript (puts the tab on the right, and opens it on hover rather than click):
 	
-        $('#my-tab').tabSlideOut( {'tabLocation':'right','action':'hover'} );
+    $('#my-tab').tabSlideOut( {'tabLocation':'right','action':'hover'} );
 		
-	Style the tab panel and handle using CSS. Add the class ui-slideouttab-handle-rounded to handles to give them 
-    rounded outer corners.
+Style the tab panel and handle using CSS. Add the class ui-slideouttab-handle-rounded to handles to give them rounded outer corners.
+
+### Scrollbars
+To achieve a tabSlideOut with vertical scrollbars for long content, you will need to:
+1. Put the scrolling content in a div inside your tabSlideOut panel, and give your div height: 100%. (If you don't do this, the scrolling will apply to the whole panel, causing the tab handle inside it to disappear).
+1. Limit the height of your tabSlideOut using height, top, bottom, left or right CSS properties, or the otherOffset initialisation parameter.
 
 Methods
 ------
 
-    You can use some methods to programmatically interact with tabs. Methods except 'isOpen' are chainable.
+You can use some methods to programmatically interact with tabs. Methods except 'isOpen' are chainable.
 
         $('#my-tab').tabSlideOut('isOpen'); // return true or false
         $('#my-tab').tabSlideOut('open'); // opens it
@@ -39,9 +43,9 @@ Methods
         $('#my-tab').tabSlideOut('toggle'); // toggles it
         $('#my-tab').tabSlideOut('bounce'); // bounces the tab
 		
-	You can also send JQuery events to initiate actions:
+You can also send JQuery events to initiate actions:
 	
-	    $('#my-tab').trigger('open'); // opens it
+	$('#my-tab').trigger('open'); // opens it
         $('#my-tab').trigger('close'); // closes it
         $('#my-tab').trigger('toggle'); // toggles it
         $('#my-tab').trigger('bounce'); // bounces the tab
@@ -49,15 +53,15 @@ Methods
 Events
 ------
 
-    Three events are defined and can be caught when tabs open and close:
+Three events are defined and can be caught when tabs open and close:
 
-        $(document).on('slideouttabopen slideouttabclose slideouttabbounce',function(event){
-            var $panel = $(event.target);
-            var eventType = event.type;
-            // your code here
-        });
+    $(document).on('slideouttabopen slideouttabclose slideouttabbounce',function(event){
+        var $panel = $(event.target);
+        var eventType = event.type;
+        // your code here
+    });
 
-	Features are demonstrated on the demo page.
+Features are demonstrated on the demo page.
 
 Options
 -------
