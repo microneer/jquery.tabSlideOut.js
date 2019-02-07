@@ -142,7 +142,11 @@
                 clickScreenToClose: true, // close tab when somewhere outside the tab is clicked
                 clickScreenToCloseFilters: ['.ui-slideouttab-panel'], // if click target or parents match any of these, click won't close this tab
                 onOpen: function(){}, // handler called after opening
-                onClose: function(){} // handler called after closing
+                onClose: function(){}, // handler called after closing
+				onSlide: function(){}, // handler called after opening or closing
+				onBeforeOpen: function(){return true;}, // handler called before opening, return false to cancel
+				onBeforeClose: function(){return true;}, // handler called before closing, return false to cancel
+				onBeforeSlide: function(){return true;} // handler called before opening or closing, return false to cancel
             }, callerSettings||{});
 
             var edge = settings.tabLocation; 
@@ -249,13 +253,19 @@
 			panel.addClass('ui-slideouttab-ready');
 
 			var close = function() {
-				panel.removeClass('ui-slideouttab-open').trigger('slideouttabclose');
-				settings.onClose();
+				if ( settings.onBeforeSlide() && settings.onBeforeClose() ) {
+					panel.removeClass('ui-slideouttab-open').trigger('slideouttabclose');
+					settings.onSlide();
+					settings.onClose();
+				}
 			};
 
 			var open = function() {
-				panel.addClass('ui-slideouttab-open').trigger('slideouttabopen');
-				settings.onOpen();
+				if ( settings.onBeforeSlide() && settings.onBeforeOpen() ) {
+					panel.addClass('ui-slideouttab-open').trigger('slideouttabopen');
+					settings.onSlide();
+					settings.onOpen();
+				}
 			};
 			
 			var toggle = function() {

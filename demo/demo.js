@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	
+
     var left = $('#left').tabSlideOut({
       tabLocation: 'left',
       clickScreenToClose: false,
@@ -13,7 +13,7 @@ $(document).ready(function() {
       onClose: function(){
           $('#open').prop('disabled',false);
           $('#close').prop('disabled',true);
-      }      
+      }
     });
     
     $('#right').tabSlideOut({
@@ -44,8 +44,11 @@ $(document).ready(function() {
     $('#bottom').tabSlideOut({
       tabLocation: 'bottom',  
       offset: '40px',
-      otherOffset: '40px'
-    });
+      otherOffset: '40px',
+	  onBeforeClose: function() {
+		  return confirm("Do you want to close the bottom slide out tab?");
+	  }
+	});
 	
     /* programmatically drive the left tab */
     $('button.lefty').click(function(event){

@@ -9,13 +9,15 @@ is used to attract attention to a tab).
 Demo
 ----
  *  [Demonstration on JSFiddle](http://jsfiddle.net/6kvus71q/27/)
+ *  Features are also demonstrated on the demo page in the demo directory.
+
 
 Usage
 -----
 
 To use this you need an element for the tab panel content ('panel'), and inside it an element for the 
 tab which will stick out from the window edge and be clickable ('handle'). By default the selector 
-for handles is '.handle'.
+for handles is '.handle'. The plugin will take care of positioning them for you.
 
 example HTML:
 	
@@ -24,31 +26,34 @@ example HTML:
 example JavaScript (puts the tab on the right, and opens it on hover rather than click):
 	
     $('#my-tab').tabSlideOut( {'tabLocation':'right','action':'hover'} );
-		
-Style the tab panel and handle using CSS. Add the class ui-slideouttab-handle-rounded to handles to give them rounded outer corners.
+
+There are many more options which can be put inside the { } - they are described below.	
+
+Style the tab panel and handle using CSS (or inline styles if you must). Add the class ui-slideouttab-handle-rounded 
+to handles to give them rounded outer corners. These features are shown on the demo page.
 
 ### Scrollbars
 To achieve a tabSlideOut with vertical scrollbars for long content, you will need to:
 1. Put the scrolling content in a div inside your tabSlideOut panel, and give your div height: 100%. (If you don't do this, the scrolling will apply to the whole panel, causing the tab handle inside it to disappear).
-1. Limit the height of your tabSlideOut using height, top, bottom, left or right CSS properties, or the otherOffset initialisation parameter.
+1. Limit the height of your tabSlideOut using height, top, bottom, left or right CSS properties, or the otherOffset option to the plugin.
 
 Methods
 ------
 
 You can use some methods to programmatically interact with tabs. Methods except 'isOpen' are chainable.
 
-        $('#my-tab').tabSlideOut('isOpen'); // return true or false
-        $('#my-tab').tabSlideOut('open'); // opens it
-        $('#my-tab').tabSlideOut('close'); // closes it
-        $('#my-tab').tabSlideOut('toggle'); // toggles it
-        $('#my-tab').tabSlideOut('bounce'); // bounces the tab
+	$('#my-tab').tabSlideOut('isOpen'); // return true or false
+	$('#my-tab').tabSlideOut('open'); // opens it
+	$('#my-tab').tabSlideOut('close'); // closes it
+	$('#my-tab').tabSlideOut('toggle'); // toggles it
+	$('#my-tab').tabSlideOut('bounce'); // bounces the tab
 		
 You can also send JQuery events to initiate actions:
 	
 	$('#my-tab').trigger('open'); // opens it
-        $('#my-tab').trigger('close'); // closes it
-        $('#my-tab').trigger('toggle'); // toggles it
-        $('#my-tab').trigger('bounce'); // bounces the tab
+    $('#my-tab').trigger('close'); // closes it
+    $('#my-tab').trigger('toggle'); // toggles it
+    $('#my-tab').trigger('bounce'); // bounces the tab
 
 Events
 ------
@@ -60,8 +65,14 @@ Three events are defined and can be caught when tabs open and close:
         var eventType = event.type;
         // your code here
     });
+	
+Handlers
+--------
 
-Features are demonstrated on the demo page.
+onOpen, onClose and onSlide handlers can be set as options, to take some action when the slide out tab opens or closes.
+
+There are also onBeforeOpen, onBeforeClose and onBeforeSlide handlers which can cancel the sliding by returning false.
+
 
 Options
 -------
@@ -87,9 +98,21 @@ You can leave out any options, and the following defaults are used:
 	clickScreenToClose: true, // close tab when somewhere outside the tab is clicked
 	clickScreenToCloseFilters: ['.ui-slideouttab-panel'], // if click target or parents match any of these, click won't close this tab
 	onOpen: function(){}, // handler called after opening
-	onClose: function(){} // handler called after closing
+	onClose: function(){}, // handler called after closing
+	onSlide: function(){}, // handler called after opening or closing
+	onBeforeOpen: function(){return true;}, // handler called before opening, return false to cancel
+	onBeforeClose: function(){return true;}, // handler called before closing, return false to cancel
+	onBeforeSlide: function(){return true;} // handler called before opening or closing, return false to cancel
 
 Add the class ui-slideouttab-handle-rounded to a handle to give it rounded outer corners.
+
+Classes
+------- 
+
+The following may help you locate and interact with your panels, especially if you have more than one of them.
+
+* All slide out panels will be given the class ui-slideouttab-panel and ui-slideouttab-EDGE, where EDGE is one of left, right, top or bottom.
+* The tab will be given the class ui-slideouttab-handle.
 	
 Licence
 -------
