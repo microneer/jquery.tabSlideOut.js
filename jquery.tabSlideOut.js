@@ -1,5 +1,5 @@
 /*
-    tabSlideOUt v2.4
+    tabSlideOUt
 
     Originally by William Paoli: http://code.google.com/p/tab-slide-out
     Maintained by Michael Fielding: https://github.com/hawk-ip/jquery.tabSlideOut.js
